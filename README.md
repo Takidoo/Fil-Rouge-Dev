@@ -1,86 +1,84 @@
-# STREAMIX - Video Streaming Platform
+# STREAMIX - Plateforme de Diffusion Vidéo
 
-A modern video streaming platform built with Express, React, and Prisma. Stream videos with HLS support, manage a personal library, and interact with the community through comments and genre-based discovery.
+Une plateforme moderne de diffusion vidéo construite avec Express, React et Prisma. Diffusez des vidéos en HLS, gérez votre bibliothèque personnelle et interagissez avec la communauté grâce aux commentaires et à la découverte par genre.
 
-## Tech Stack
+## Stack Technologique
 
 ### Backend
 - **Framework**: Express 5
-- **Database**: PostgreSQL (via Prisma 7 with @prisma/adapter-pg)
-- **Language**: TypeScript 6
+- **Base de données**: PostgreSQL (via Prisma 7 avec @prisma/adapter-pg)
+- **Langage**: TypeScript 6
 - **Validation**: Zod 4
-- **Authentication**: JWT + bcrypt
-- **Video Processing**: fluent-ffmpeg + ffmpeg-static (HLS conversion)
-- **Security**: Helmet (CSP), express-rate-limit
+- **Authentification**: JWT + bcrypt
+- **Traitement vidéo**: fluent-ffmpeg + ffmpeg-static (conversion HLS)
+- **Sécurité**: Helmet (CSP), express-rate-limit
 
 ### Frontend
 - **Framework**: React 19
-- **Build Tool**: Vite 8
-- **Language**: TypeScript 6
-- **Routing**: React Router 7
-- **HTTP Client**: Axios
-- **Video Player**: HLS.js
+- **Outil de build**: Vite 8
+- **Langage**: TypeScript 6
+- **Routage**: React Router 7
+- **Client HTTP**: Axios
+- **Lecteur vidéo**: HLS.js
 
-## Features
+## Fonctionnalités
 
-- 🎬 **Video Streaming**: HLS-based video delivery with on-demand conversion
-- 👤 **User Accounts**: Registration, login, profile management
-- 🎯 **Genre Organization**: Browse and filter videos by genre
-- 💬 **Comments**: Direct commenting on videos (instant publishing)
-- 🔍 **Search**: Accent-insensitive full-text search across titles and descriptions
-- 🎬 **Video Upload**: Users can upload, convert, and manage their videos
-- 👮 **Admin Panel**: User management, video moderation capabilities
-- 📱 **Responsive UI**: Mobile-friendly interface with Vite dev server proxying
+- 🎬 **Diffusion vidéo**: Livraison vidéo basée sur HLS avec conversion à la demande
+- 👤 **Comptes utilisateur**: Inscription, connexion, gestion de profil
+- 🎯 **Organisation par genre**: Parcourir et filtrer les vidéos par genre
+- 💬 **Commentaires**: Commenter directement les vidéos (publication instantanée)
+- 🔍 **Recherche**: Recherche textuelle insensible aux accents sur les titres et descriptions
+- 🎬 **Téléversement vidéo**: Les utilisateurs peuvent télécharger, convertir et gérer leurs vidéos
+- 👮 **Panneau administrateur**: Gestion des utilisateurs et des capacités de modération
+- 📱 **Interface réactive**: Interface adaptée aux mobiles avec proxy du serveur de développement Vite
 
-## Project Structure
+## Structure du projet
 
 ```
 .
 ├── backend/
 │   ├── src/
-│   │   ├── app.ts                 # Express app setup
-│   │   ├── server.ts              # Server entry point
-│   │   ├── config/                # Configuration (env, paths, constants)
-│   │   ├── controllers/           # Route handlers
-│   │   ├── services/              # Business logic
-│   │   ├── repositories/          # Data access layer
-│   │   ├── middlewares/           # Express middlewares
-│   │   ├── validators/            # Zod schemas
-│   │   ├── types/                 # TypeScript types
+│   │   ├── app.ts                 # Configuration de l'app Express
+│   │   ├── server.ts              # Point d'entrée du serveur
+│   │   ├── config/                # Configuration (env, chemins, constantes)
+│   │   ├── controllers/           # Handlers des routes
+│   │   ├── services/              # Logique métier
+│   │   ├── repositories/          # Couche d'accès aux données
+│   │   ├── middlewares/           # Middlewares Express
+│   │   ├── validators/            # Schémas Zod
+│   │   ├── types/                 # Types TypeScript
 │   │   ├── utils/                 # Helpers (auth, logging, HLS, etc.)
-│   │   └── db/                    # Prisma client
+│   │   └── db/                    # Client Prisma
 │   ├── prisma/
-│   │   ├── schema.prisma          # Database schema
-│   │   ├── seed.ts                # Database seeding
-│   │   └── migrations/            # Migration history
-│   ├── videos/                    # Media storage (HLS, originals, thumbnails)
-│   └── dist/                      # Compiled output
+│   │   ├── schema.prisma          # Schéma de base de données
+│   │   ├── seed.ts                # Peuplement initial
+│   │   └── migrations/            # Historique des migrations
+│   ├── videos/                    # Stockage média (HLS, originaux, miniatures)
+│   └── dist/                      # Sortie compilée
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── pages/                 # Page components
-│   │   ├── components/            # Reusable components
-│   │   ├── api/                   # API client
-│   │   ├── hooks/                 # Custom React hooks
-│   │   ├── contexts/              # React contexts
-│   │   ├── types/                 # TypeScript types
+│   │   ├── pages/                 # Composants de pages
+│   │   ├── components/            # Composants réutilisables
+│   │   ├── api/                   # Client API
+│   │   ├── hooks/                 # Hooks React personnalisés
+│   │   ├── contexts/              # Contextes React
+│   │   ├── types/                 # Types TypeScript
 │   │   ├── utils/                 # Helpers
-│   │   ├── constants/             # App constants
-│   │   └── App.tsx                # Root component
-│   ├── public/                    # Static assets
-│   └── dist/                      # Build output
+│   │   ├── constants/             # Constantes de l'app
+│   │   └── App.tsx                # Composant racine
+│   ├── public/                    # Ressources statiques
+│   └── dist/                      # Sortie de build
 │
-└── ARCHITECTURE.md                # Detailed architecture guide
+└── ARCHITECTURE.md                # Guide d'architecture détaillé
 ```
 
-## Setup
+## Installation
 
-### Prerequisites
+### Prérequis
 - Node.js 18+
 - PostgreSQL 14+
-- FFmpeg (for HLS video conversion)
-
-### Installation
+- FFmpeg (pour la conversion vidéo HLS)
 
 #### Backend
 
@@ -89,26 +87,26 @@ cd backend
 npm install
 ```
 
-Create `.env`:
+Créer `.env`:
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/streamix"
-JWT_SECRET="your-secret-key-here"
+JWT_SECRET="votre-cle-secrete-ici"
 NODE_ENV="development"
 PORT=3000
 ```
 
-Initialize database:
+Initialiser la base de données:
 ```bash
 npx prisma migrate dev
 npx prisma db seed
 ```
 
-Start development server:
+Démarrer le serveur de développement:
 ```bash
 npm run dev
 ```
 
-Build:
+Compiler:
 ```bash
 npm run build
 ```
@@ -120,91 +118,91 @@ cd frontend
 npm install
 ```
 
-Start development server:
+Démarrer le serveur de développement:
 ```bash
 npm run dev
 ```
 
-Build:
+Compiler:
 ```bash
 npm run build
 ```
 
-## API Overview
+## Aperçu de l'API
 
-### Authentication
-- `POST /auth/register` - Create account
-- `POST /auth/login` - Get JWT token
-- `POST /auth/logout` - Clear session
+### Authentification
+- `POST /auth/register` - Créer un compte
+- `POST /auth/login` - Obtenir un token JWT
+- `POST /auth/logout` - Terminer la session
 
-### Videos
-- `GET /video` - List all videos
-- `POST /video` - Upload new video (authenticated)
-- `GET /video/:id` - Get video details
-- `PUT /video/:id` - Update video (owner only)
-- `DELETE /video/:id` - Delete video (owner or admin)
-- `GET /video/search?q=...` - Search videos
+### Vidéos
+- `GET /video` - Lister toutes les vidéos
+- `POST /video` - Téléverser une nouvelle vidéo (authentifiée)
+- `GET /video/:id` - Obtenir les détails d'une vidéo
+- `PUT /video/:id` - Mettre à jour une vidéo (propriétaire uniquement)
+- `DELETE /video/:id` - Supprimer une vidéo (propriétaire ou admin)
+- `GET /video/search?q=...` - Rechercher des vidéos
 
-### Comments
-- `GET /comment/video/:videoId` - Get comments for video
-- `POST /comment/video/:videoId` - Create comment (authenticated)
-- `DELETE /comment/:id` - Delete comment (author or admin)
+### Commentaires
+- `GET /comment/video/:videoId` - Obtenir les commentaires d'une vidéo
+- `POST /comment/video/:videoId` - Créer un commentaire (authentifié)
+- `DELETE /comment/:id` - Supprimer un commentaire (auteur ou admin)
 
 ### Genres
-- `GET /genre` - List all genres
-- `POST /genre` - Create genre (admin only)
+- `GET /genre` - Lister tous les genres
+- `POST /genre` - Créer un genre (admin uniquement)
 
-### Users
-- `GET /user/profile` - Get current user
-- `PUT /user/profile` - Update profile (authenticated)
-- `GET /user` - List users (admin only)
-- `DELETE /user/:id` - Delete user (admin only)
+### Utilisateurs
+- `GET /user/profile` - Obtenir l'utilisateur courant
+- `PUT /user/profile` - Mettre à jour le profil (authentifié)
+- `GET /user` - Lister les utilisateurs (admin uniquement)
+- `DELETE /user/:id` - Supprimer un utilisateur (admin uniquement)
 
 ### Admin
-- `GET /admin/users` - Dashboard user stats
+- `GET /admin/users` - Statistiques du tableau de bord
 
-## Architecture Highlights
+## Points clés de l'architecture
 
-### Layered Architecture
-- **Controllers**: HTTP request/response handling
-- **Services**: Business logic and validation
-- **Repositories**: Database abstraction
-- **Middleware**: Cross-cutting concerns (auth, validation, errors)
+### Architecture en couches
+- **Controllers**: Gestion des requêtes/réponses HTTP
+- **Services**: Logique métier et validation
+- **Repositories**: Abstraction de la base de données
+- **Middleware**: Préoccupations transversales (auth, validation, erreurs)
 
-### Security
-- **Authentication**: JWT with 8-hour expiration
-- **Password**: bcrypt hashing (12 salt rounds)
-- **Authorization**: Role-based access control (ADMIN/USER)
-- **CORS**: Configured for frontend origin
-- **Rate Limiting**: 15-minute windows, 20 requests per IP
-- **CSP**: Helmet with media security headers
+### Sécurité
+- **Authentification**: JWT avec expiration 8 heures
+- **Mots de passe**: Hachage bcrypt (12 salt rounds)
+- **Autorisation**: Contrôle d'accès basé sur les rôles (ADMIN/USER)
+- **CORS**: Configuré pour l'origine du frontend
+- **Rate Limiting**: Fenêtres 15 minutes, 20 requêtes par IP
+- **CSP**: Helmet avec headers de sécurité média
 
-### Video Processing
+### Traitement vidéo
 - **Format**: HLS (HTTP Live Streaming)
 - **Codec**: H.264 (libx264)
-- **Resolution**: 1280x720 (adaptive scaling)
-- **Segments**: 6-second TS files
-- **Conversion**: On-demand during upload (async recommended for production)
+- **Résolution**: 1280x720 (mise à l'échelle adaptative)
+- **Segments**: Fichiers TS de 6 secondes
+- **Conversion**: À la demande lors du téléversement (async recommandé en production)
 
-### Search
-- Accent-insensitive full-text matching
-- Normalized storage (NFD decomposition + accent stripping)
-- Genre filtering support
+### Recherche
+- Correspondance textuelle insensible aux accents
+- Stockage normalisé (décomposition NFD + suppression d'accents)
+- Support du filtrage par genre
 
-## Environment Variables
+## Variables d'environnement
 
 ### Backend
-- `DATABASE_URL` - PostgreSQL connection string (required)
-- `JWT_SECRET` - Secret key for JWT signing (required)
+- `DATABASE_URL` - Chaîne de connexion PostgreSQL (obligatoire)
+- `JWT_SECRET` - Clé secrète pour la signature JWT (obligatoire)
 - `NODE_ENV` - "development" | "production"
-- `PORT` - Server port (default: 3000)
+- `PORT` - Port du serveur (défaut: 3000)
 
 ### Frontend
-- Vite dev server proxies API to backend (see `vite.config.ts`)
+- Le serveur de développement Vite proxie l'API vers le backend (voir `vite.config.ts`)
 
-## Development
+## Développement
 
-### Running Tests
+### Exécuter les tests
 ```bash
 # Backend
 npm run test
@@ -213,7 +211,7 @@ npm run test
 npm run test
 ```
 
-### Building
+### Compiler
 ```bash
 # Backend
 npm run build
@@ -222,32 +220,32 @@ npm run build
 npm run build
 ```
 
-### Type Checking
+### Vérification des types
 ```bash
-# Both projects use TypeScript for compile-time safety
+# Les deux projets utilisent TypeScript pour la sécurité au temps de compilation
 tsc --noEmit
 ```
 
-## Known Limitations & Future Improvements
+## Limitations connues et améliorations futures
 
-1. **Synchronous HLS Conversion**: Blocks upload response; recommend async queue (BullMQ)
-2. **Pagination**: Consider adding limits to `findAll()` queries
-3. **Media Validation**: Add magic byte validation for uploaded files
-4. **Rate Limiting**: Not applied to expensive endpoints like `/video/upload`
-5. **Testing**: No visible test suite in current repo
+1. **Conversion HLS synchrone**: Bloque la réponse de téléversement; recommande une file d'attente async (BullMQ)
+2. **Pagination**: Considérer l'ajout de limites aux requêtes `findAll()`
+3. **Validation média**: Ajouter la validation du magic byte pour les fichiers téléversés
+4. **Rate Limiting**: Non appliqué aux endpoints coûteux comme `/video/upload`
+5. **Tests**: Aucune suite de tests visible dans le repo actuel
 
-## Contributing
+## Contribution
 
-- Follow the existing layered architecture pattern
-- Use Zod for all input validation
-- Implement proper error handling via `AppError`
-- Add TypeScript types for new features
-- Keep business logic in services, not controllers
+- Suivre le modèle d'architecture en couches existant
+- Utiliser Zod pour toute la validation des entrées
+- Implémenter une gestion d'erreurs appropriée via `AppError`
+- Ajouter des types TypeScript pour les nouvelles fonctionnalités
+- Garder la logique métier dans les services, pas dans les controllers
 
-## License
+## Licence
 
-Internal project for Ynov (Fil Rouge Dev).
+Projet interne pour Ynov (Fil Rouge Dev).
 
 ## Support
 
-For issues or questions, refer to `ARCHITECTURE.md` for detailed design decisions.
+Pour les problèmes ou questions, consultez `ARCHITECTURE.md` pour les décisions de conception détaillées.
