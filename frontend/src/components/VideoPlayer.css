@@ -1,0 +1,18 @@
+.video-player-wrapper {
+  width: 100%;
+  background: #000;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+}
+
+.video-player {
+  width: 100%;
+  max-height: 68vh;
+  display: block;
+  outline: none;
+}
+
+.video-player::-webkit-media-controls-panel {
+  background: linear-gradient(transparent, rgba(0,0,0,0.75));
+}
