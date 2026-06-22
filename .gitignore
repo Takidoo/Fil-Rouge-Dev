@@ -19,6 +19,9 @@ backend/.tsc/
 # Frontend specific
 frontend/dist/
 
+# Local docs (schemas, diagrams)
+docs/
+
 # IDE
 .vscode/
 .idea/
