@@ -36,6 +36,7 @@ export function createApp(): Express {
 
     app.use(express.json({ limit: "1mb" }));
 
+    app.get("/", (_req, res) => res.json({ status: "ok" }));
     app.get("/health", (_req, res) => res.json({ status: "ok" }));
 
     app.use("/videos", express.static(VIDEOS_ROOT, { setHeaders: setStreamingHeaders }));

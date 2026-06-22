@@ -4,6 +4,8 @@ import { createLogger } from "./utils/logger.js";
 
 const logger = createLogger("server");
 
-createApp().listen(env.PORT, "0.0.0.0", () => {
-    logger.info(`API running on port ${env.PORT} (${env.NODE_ENV})`);
+const PORT = Number(process.env.PORT) || env.PORT;
+
+createApp().listen(PORT, "0.0.0.0", () => {
+    logger.info(`API running on port ${PORT} (${env.NODE_ENV}) — process.env.PORT=${process.env.PORT}`);
 });
