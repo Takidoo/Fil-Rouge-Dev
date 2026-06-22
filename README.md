@@ -6,7 +6,7 @@ STREAMIX est une plateforme de streaming vidéo full-stack inspirée de YouTube.
 
 ## Fonctionnalités
 
-- **Streaming HLS adaptatif** — les vidéos sont converties automatiquement en 3 qualités (1080p / 720p / 480p) via FFmpeg
+- **Streaming HLS adaptatif** — les vidéos sont converties en 3 qualités (1080p / 720p / 480p) via FFmpeg
 - **Lecteur vidéo custom** — contrôles complets, sélection de qualité manuelle, raccourcis clavier, picture-in-picture
 - **Authentification JWT** — inscription, connexion, token d'accès signé
 - **Rôles** — utilisateur standard et administrateur
@@ -28,19 +28,18 @@ STREAMIX est une plateforme de streaming vidéo full-stack inspirée de YouTube.
 | Vidéo | FFmpeg (ffmpeg-static), HLS multi-renditions |
 | Auth | JWT (jsonwebtoken), bcrypt |
 | Sécurité | Helmet, express-rate-limit, CORS |
-| Build backend | esbuild |
 
 ---
 
 ## Prérequis
 
 - **Node.js** 20+
-- **PostgreSQL** 14+
-- **FFmpeg** — fourni automatiquement via `ffmpeg-static` (pas d'installation manuelle)
+- **PostgreSQL** 14+ en cours d'exécution en local
+- FFmpeg est inclus via `ffmpeg-static` — pas d'installation manuelle nécessaire
 
 ---
 
-## Installation locale
+## Installation
 
 ### 1. Cloner le projet
 
@@ -56,7 +55,7 @@ cd backend
 npm install
 ```
 
-Créer le fichier `.env` :
+Créer le fichier `backend/.env` :
 
 ```env
 DATABASE_URL="postgresql://postgres:motdepasse@localhost:5432/streamix"
@@ -66,14 +65,14 @@ PORT=3000
 ALLOWED_ORIGIN="http://localhost:5173"
 ```
 
-Initialiser la base de données et charger les genres :
+Initialiser la base de données et insérer les genres :
 
 ```bash
 npx prisma migrate dev
 npm run db:seed
 ```
 
-Démarrer le serveur de développement :
+Démarrer le serveur :
 
 ```bash
 npm run dev
@@ -82,6 +81,8 @@ npm run dev
 
 ### 3. Frontend
 
+Dans un second terminal :
+
 ```bash
 cd frontend
 npm install
@@ -89,7 +90,7 @@ npm run dev
 # Application disponible sur http://localhost:5173
 ```
 
-> Le proxy Vite redirige automatiquement les appels API vers `http://localhost:3000` — aucune configuration supplémentaire nécessaire.
+> Le proxy Vite redirige automatiquement les appels `/auth`, `/video`, `/comment`, etc. vers `http://localhost:3000` — aucune configuration supplémentaire nécessaire.
 
 ---
 
@@ -107,7 +108,7 @@ Fil-Rouge-Dev/
 │   │   ├── repositories/      # Accès base de données (Prisma)
 │   │   ├── middlewares/       # Auth, erreurs, validation
 │   │   ├── validators/        # Schémas Zod
-│   │   ├── utils/             # HLS, logger, JWT, bcrypt
+│   │   ├── utils/             # HLS, logger, JWT
 │   │   └── db/                # Client Prisma
 │   ├── prisma/
 │   │   ├── schema.prisma      # Modèle de données
@@ -143,8 +144,6 @@ Requête HTTP
     ↓
   Repository    →  requêtes Prisma / PostgreSQL
 ```
-
-Chaque couche est indépendante et ne connaît que la couche suivante.
 
 ---
 
@@ -188,7 +187,6 @@ Chaque couche est indépendante et ne connaît que la couche suivante.
 | GET | `/admin/users` | ✓ | Liste des utilisateurs |
 | DELETE | `/admin/users/:id` | ✓ | Supprimer un utilisateur |
 | PATCH | `/admin/comment/:id` | ✓ | Modérer un commentaire |
-| GET | `/admin/videos` | ✓ | Toutes les vidéos |
 
 ---
 
@@ -209,16 +207,12 @@ vidéo originale (MP4)
         ↓
   index.m3u8  (master playlist)
         ↓
-  HLS.js (frontend) — sélection automatique ou manuelle
+  HLS.js — sélection automatique ou manuelle de la qualité
 ```
-
-Les segments vidéo (`.ts`) de 6 secondes sont servis statiquement depuis `/videos`.
 
 ---
 
-## Variables d'environnement
-
-### Backend (`backend/.env`)
+## Variables d'environnement (`backend/.env`)
 
 | Variable | Obligatoire | Défaut | Description |
 |---|---|---|---|
@@ -230,46 +224,14 @@ Les segments vidéo (`.ts`) de 6 secondes sont servis statiquement depuis `/vide
 
 ---
 
-## Déploiement
-
-Le projet est déployé en deux services séparés :
-
-| Service | Plateforme | URL |
-|---|---|---|
-| Backend (API + vidéos) | Render.com | `https://fil-rouge-dev.onrender.com` |
-| Frontend (SPA) | Render.com | `https://fil-rouge-dev-1.onrender.com` |
-
-### Variables à configurer sur Render (backend)
-
-```
-NODE_ENV=production
-DATABASE_URL=<connexion PostgreSQL Render>
-JWT_SECRET=<clé secrète>
-ALLOWED_ORIGIN=https://fil-rouge-dev-1.onrender.com
-```
-
-### Commandes de build/start (Render)
-
-```bash
-# Build
-npm install && npm run build
-
-# Start
-npx prisma migrate deploy && node ./dist/server.js
-```
-
----
-
 ## Sécurité
 
 - Mots de passe hachés avec **bcrypt** (12 salt rounds)
 - Tokens JWT expiration **8 heures**
 - **Rate limiting** — 20 requêtes / 15 min par IP
-- Headers sécurisés via **Helmet** (CSP, CORS, HSTS…)
+- Headers sécurisés via **Helmet**
 - Validation de toutes les entrées avec **Zod**
 
 ---
-
-## Projet scolaire
 
 Projet Fil Rouge — Ynov B2 — 2025/2026
