@@ -1,7 +1,9 @@
-import { prisma } from "../db/prisma.js";
+import type { PrismaClient } from "../../generated/prisma/client.js";
 
-export const genreRepository = {
-    findAll: async () => {
-        return prisma.genre.findMany({ orderBy: { name: "asc" } });
-    },
-};
+export class GenreRepository {
+    constructor(private prisma: PrismaClient) {}
+
+    async findAll() {
+        return this.prisma.genre.findMany({ orderBy: { name: "asc" } });
+    }
+}

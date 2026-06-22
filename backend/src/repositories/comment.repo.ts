@@ -1,30 +1,32 @@
-import { prisma } from "../db/prisma.js";
+import type { PrismaClient } from "../../generated/prisma/client.js";
 
 const includeUser = {
     user: { select: { id: true, name: true } },
 } as const;
 
+export class CommentRepository {
+    constructor(private prisma: PrismaClient) {}
 
-
-export const commentRepository = {
-    create: (content: string, userId: string, videoId: string) =>
-        prisma.comment.create({
+    create(content: string, userId: string, videoId: string) {
+        return this.prisma.comment.create({
             data: { content, userId, videoId, status: "APPROVED" },
             include: includeUser,
-        }),
+        });
+    }
 
-    findById: (id: string) =>
-        prisma.comment.findUnique({ where: { id } }),
+    findById(id: string) {
+        return this.prisma.comment.findUnique({ where: { id } });
+    }
 
-    findApprovedByVideo: (videoId: string) =>
-        prisma.comment.findMany({
+    findApprovedByVideo(videoId: string) {
+        return this.prisma.comment.findMany({
             where: { videoId, status: "APPROVED" },
             orderBy: { createdAt: "asc" },
             include: includeUser,
-        }),
+        });
+    }
 
-
-
-    deleteById: (id: string) =>
-        prisma.comment.delete({ where: { id }, select: { id: true } }),
-};
+    deleteById(id: string) {
+        return this.prisma.comment.delete({ where: { id }, select: { id: true } });
+    }
+}

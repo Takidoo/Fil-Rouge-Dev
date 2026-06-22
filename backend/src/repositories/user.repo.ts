@@ -1,4 +1,4 @@
-import { prisma } from "../db/prisma.js";
+import type { PrismaClient } from "../../generated/prisma/client.js";
 
 const publicUserSelect = {
     id: true,
@@ -20,28 +20,37 @@ export interface UpdateUserData {
     password?: string;
 }
 
-export const userRepository = {
-    create: (data: CreateUserData) =>
-        prisma.user.create({ data, select: publicUserSelect }),
+export class UserRepository {
+    constructor(private prisma: PrismaClient) {}
 
-    findById: (id: string) =>
-        prisma.user.findUnique({ where: { id }, select: publicUserSelect }),
+    create(data: CreateUserData) {
+        return this.prisma.user.create({ data, select: publicUserSelect });
+    }
 
-    findByEmail: (email: string) =>
-        prisma.user.findUnique({ where: { email }, select: publicUserSelect }),
+    findById(id: string) {
+        return this.prisma.user.findUnique({ where: { id }, select: publicUserSelect });
+    }
 
-    findByEmailWithPassword: (email: string) =>
-        prisma.user.findUnique({ where: { email } }),
+    findByEmail(email: string) {
+        return this.prisma.user.findUnique({ where: { email }, select: publicUserSelect });
+    }
 
-    findAllWithVideoCount: () =>
-        prisma.user.findMany({
+    findByEmailWithPassword(email: string) {
+        return this.prisma.user.findUnique({ where: { email } });
+    }
+
+    findAllWithVideoCount() {
+        return this.prisma.user.findMany({
             orderBy: { createdAt: "desc" },
             select: { ...publicUserSelect, _count: { select: { videos: true } } },
-        }),
+        });
+    }
 
-    updateByEmail: (email: string, data: UpdateUserData) =>
-        prisma.user.update({ where: { email }, data, select: publicUserSelect }),
+    updateByEmail(email: string, data: UpdateUserData) {
+        return this.prisma.user.update({ where: { email }, data, select: publicUserSelect });
+    }
 
-    deleteById: (id: string) =>
-        prisma.user.delete({ where: { id }, select: { id: true } }),
-};
+    deleteById(id: string) {
+        return this.prisma.user.delete({ where: { id }, select: { id: true } });
+    }
+}

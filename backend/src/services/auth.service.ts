@@ -1,23 +1,25 @@
-import { userRepository } from "../repositories/user.repo.js";
+import { UserRepository } from "../repositories/user.repo.js";
 import { generateToken } from "../utils/jwt.js";
 import { hashPassword, verifyPassword } from "../utils/password.js";
 import { AppError } from "../utils/errors.js";
 import { isUniqueConstraintViolation } from "../utils/prisma-errors.js";
 
-export const authService = {
-    login: async (email: string, password: string): Promise<string> => {
-        const user = await userRepository.findByEmailWithPassword(email);
+export class AuthService {
+    constructor(private userRepository: UserRepository) {}
+
+    async login(email: string, password: string): Promise<string> {
+        const user = await this.userRepository.findByEmailWithPassword(email);
 
         if (!user || !(await verifyPassword(password, user.password))) {
             throw AppError.unauthorized("Identifiants invalides");
         }
 
         return generateToken(user.id, user.email);
-    },
+    }
 
-    register: async (email: string, name: string, password: string): Promise<string> => {
+    async register(email: string, name: string, password: string): Promise<string> {
         try {
-            const user = await userRepository.create({
+            const user = await this.userRepository.create({
                 email,
                 name,
                 password: await hashPassword(password),
@@ -29,5 +31,5 @@ export const authService = {
             }
             throw error;
         }
-    },
-};
+    }
+}

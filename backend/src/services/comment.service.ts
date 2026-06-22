@@ -1,24 +1,31 @@
-import { commentRepository } from "../repositories/comment.repo.js";
-import { videoRepository } from "../repositories/video.repo.js";
+import { CommentRepository } from "../repositories/comment.repo.js";
+import { VideoRepository } from "../repositories/video.repo.js";
 import { AppError } from "../utils/errors.js";
-import { assertOwnerOrAdmin } from "./permissions.js";
+import { PermissionService } from "./permissions.js";
 
-export const commentService = {
-    create: async (content: string, userId: string, videoId: string) => {
-        if (!(await videoRepository.exists(videoId))) {
+export class CommentService {
+    constructor(
+        private commentRepository: CommentRepository,
+        private videoRepository: VideoRepository,
+        private permissionService: PermissionService
+    ) {}
+
+    async create(content: string, userId: string, videoId: string) {
+        if (!(await this.videoRepository.exists(videoId))) {
             throw AppError.notFound("Vidéo introuvable");
         }
-        return commentRepository.create(content, userId, videoId);
-    },
+        return this.commentRepository.create(content, userId, videoId);
+    }
 
-    listApprovedForVideo: (videoId: string) =>
-        commentRepository.findApprovedByVideo(videoId),
+    listApprovedForVideo(videoId: string) {
+        return this.commentRepository.findApprovedByVideo(videoId);
+    }
 
-    remove: async (id: string, requesterId: string) => {
-        const comment = await commentRepository.findById(id);
+    async remove(id: string, requesterId: string) {
+        const comment = await this.commentRepository.findById(id);
         if (!comment) throw AppError.notFound("Commentaire introuvable");
 
-        await assertOwnerOrAdmin(comment.userId, requesterId);
-        return commentRepository.deleteById(id);
-    },
-};
+        await this.permissionService.assertOwnerOrAdmin(comment.userId, requesterId);
+        return this.commentRepository.deleteById(id);
+    }
+}

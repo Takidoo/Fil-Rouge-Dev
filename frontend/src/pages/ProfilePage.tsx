@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { getVideos } from "../api/video";
+import { getFavorites } from "../api/favorite";
 import { useAsync } from "../hooks/useAsync";
 import { formatMonthYear } from "../utils/format";
 import { VideoCard } from "../components/VideoCard";
@@ -29,6 +30,12 @@ export function ProfilePage() {
     loading,
     error,
   } = useAsync(getVideos, [], "Impossible de charger vos vidéos");
+
+  const {
+    data: favs,
+    loading: favsLoading,
+    error: favsError,
+  } = useAsync(getFavorites, [], "Impossible de charger vos favoris");
 
   const myVideos = (videos ?? []).filter((v) => v.userId === user?.id);
 
@@ -120,6 +127,42 @@ export function ProfilePage() {
               {myVideos.map((video, i) => (
                 <div key={video.id} style={{ animationDelay: `${i * 0.05}s` }}>
                   <VideoCard video={video} onDeleted={handleDeleted} />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* My favorites */}
+        <div className="profile-section animate-in" style={{ animationDelay: "0.2s" }}>
+          <div className="profile-section-header">
+            <h2 className="profile-section-title">
+              Mes favoris
+              {!favsLoading && (
+                <span className="profile-count">
+                  {favs?.length || 0} favori{(favs?.length || 0) !== 1 ? "s" : ""}
+                </span>
+              )}
+            </h2>
+          </div>
+
+          <ErrorMessage message={favsError} />
+
+          {favsLoading && <VideoGridSkeleton count={4} gridClassName="profile-grid" />}
+
+          {!favsLoading && (!favs || favs.length === 0) && !favsError && (
+            <EmptyState
+              icon="⭐"
+              title="Aucun favori"
+              description="Vos vidéos favorites apparaîtront ici"
+            />
+          )}
+
+          {!favsLoading && favs && favs.length > 0 && (
+            <div className="profile-grid">
+              {favs.map((video, i) => (
+                <div key={video.id} style={{ animationDelay: `${i * 0.05}s` }}>
+                  <VideoCard video={video} />
                 </div>
               ))}
             </div>

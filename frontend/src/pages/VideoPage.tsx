@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { getVideo, deleteVideo } from "../api/video";
 import { extractApiError } from "../api/errors";
@@ -10,6 +10,7 @@ import { CommentSection } from "../components/CommentSection";
 import { ConfirmInline } from "../components/ui/ConfirmInline";
 import { Spinner } from "../components/ui/Spinner";
 import { useAuth } from "../contexts/AuthContext";
+import { checkFavorite, toggleFavorite } from "../api/favorite";
 import "./VideoPage.css";
 
 export function VideoPage() {
@@ -26,6 +27,28 @@ export function VideoPage() {
   const [deleteError, setDeleteError] = useState("");
   const [deleting, setDeleting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+
+  const [isFav, setIsFav] = useState(false);
+  const [togglingFav, setTogglingFav] = useState(false);
+
+  useEffect(() => {
+    if (id && user) {
+      checkFavorite(id).then(setIsFav).catch(() => { });
+    }
+  }, [id, user]);
+
+  const handleToggleFav = async () => {
+    if (!id || togglingFav) return;
+    setTogglingFav(true);
+    try {
+      const result = await toggleFavorite(id);
+      setIsFav(result);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setTogglingFav(false);
+    }
+  };
 
   const isOwner = user && video && (user.id === video.userId || user.role === "ADMIN");
 
@@ -74,13 +97,13 @@ export function VideoPage() {
         {/* Back */}
         <button className="video-page-back btn btn-ghost" onClick={() => navigate(-1)}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M19 12H5M12 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M19 12H5M12 5l-7 7 7 7" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           Retour
         </button>
 
         {/* Player */}
-        <VideoPlayer hlsPath={video.hlsPath} videoPath={video.path} />
+        <VideoPlayer videoId={video.id} hlsPath={video.hlsPath} videoPath={video.path} />
 
         {/* Info */}
         <div className="video-page-info">
@@ -102,12 +125,22 @@ export function VideoPage() {
             <p className="video-page-desc">{video.description}</p>
           </div>
 
+          <div className="video-page-actions" style={{ marginBottom: "1rem" }}>
+            <button
+              className={`btn ${isFav ? 'btn-primary' : 'btn-secondary'}`}
+              onClick={handleToggleFav}
+              disabled={togglingFav}
+            >
+              {isFav ? "★" : "☆"}
+            </button>
+          </div>
+
           {isOwner && (
             <div className="video-page-actions">
               {!showConfirm ? (
                 <button className="btn btn-danger" onClick={() => setShowConfirm(true)}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                   Supprimer la vidéo
                 </button>

@@ -26,7 +26,6 @@ export function createApp(): Express {
                 "media-src": ["'self'", "*"],
             },
         },
-        // Allow the frontend to embed the video stream in cross-origin contexts
         crossOriginResourcePolicy: { policy: "cross-origin" },
     }));
 

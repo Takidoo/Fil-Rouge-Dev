@@ -1,7 +1,9 @@
-import { genreRepository } from "../repositories/genre.repo.js";
+import { GenreRepository } from "../repositories/genre.repo.js";
 
-export const genreService = {
-    getAll: async () => {
-        return genreRepository.findAll();
-    },
-};
+export class GenreService {
+    constructor(private genreRepository: GenreRepository) {}
+
+    async getAll() {
+        return this.genreRepository.findAll();
+    }
+}

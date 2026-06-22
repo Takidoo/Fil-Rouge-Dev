@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { userRepository } from "../repositories/user.repo.js";
+import { userRepository } from "../container.js";
 import { requireAuthUser } from "../types/express.js";
 import { AppError } from "../utils/errors.js";
 

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { rateLimit } from "express-rate-limit";
-import { authController } from "../controllers/auth.controller.js";
+import { authController } from "../container.js";
 import { validate } from "../middlewares/validate.middleware.js";
 import { loginSchema, registerSchema } from "../validators/auth.validator.js";
 import { AUTH_RATE_LIMIT } from "../config/constants.js";

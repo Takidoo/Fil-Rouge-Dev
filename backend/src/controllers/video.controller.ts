@@ -1,13 +1,15 @@
 import { Request, Response } from "express";
 import { basename } from "path";
-import { videoService } from "../services/video.service.js";
+import { VideoService } from "../services/video.service.js";
 import { requireAuthUser, requireValidQuery } from "../types/express.js";
 import { AppError } from "../utils/errors.js";
 import { VideoUploadFiles } from "../middlewares/upload.middleware.js";
 import { SearchVideoQuery } from "../validators/video.validator.js";
 
-export const videoController = {
-    upload: async (req: Request, res: Response) => {
+export class VideoController {
+    constructor(private videoService: VideoService) {}
+
+    upload = async (req: Request, res: Response) => {
         const { userId } = requireAuthUser(req);
         const { title, description, genreIds } = req.body;
 
@@ -19,7 +21,7 @@ export const videoController = {
             throw AppError.badRequest("Aucun fichier vidéo fourni");
         }
 
-        const video = await videoService.upload({
+        const video = await this.videoService.upload({
             title,
             description,
             userId,
@@ -28,27 +30,27 @@ export const videoController = {
             genreIds,
         });
         res.status(201).json(video);
-    },
+    };
 
-    list: async (_req: Request, res: Response) => {
-        const videos = await videoService.list();
+    list = async (_req: Request, res: Response) => {
+        const videos = await this.videoService.list();
         res.status(200).json(videos);
-    },
+    };
 
-    search: async (req: Request, res: Response) => {
+    search = async (req: Request, res: Response) => {
         const query = requireValidQuery<SearchVideoQuery>(req);
-        const { items, total } = await videoService.search(query);
+        const { items, total } = await this.videoService.search(query);
         res.status(200).json({ items, total, limit: query.limit, offset: query.offset });
-    },
+    };
 
-    getById: async (req: Request, res: Response) => {
-        const video = await videoService.getById(req.params.id as string);
+    getById = async (req: Request, res: Response) => {
+        const video = await this.videoService.getById(req.params.id as string);
         res.status(200).json(video);
-    },
+    };
 
-    remove: async (req: Request, res: Response) => {
+    remove = async (req: Request, res: Response) => {
         const { userId } = requireAuthUser(req);
-        await videoService.remove(req.params.id as string, userId);
+        await this.videoService.remove(req.params.id as string, userId);
         res.status(204).send();
-    },
-};
+    };
+}

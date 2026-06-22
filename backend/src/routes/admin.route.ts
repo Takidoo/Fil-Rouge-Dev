@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { adminController } from "../controllers/admin.controller.js";
+import { adminController } from "../container.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { adminMiddleware } from "../middlewares/admin.middleware.js";
 

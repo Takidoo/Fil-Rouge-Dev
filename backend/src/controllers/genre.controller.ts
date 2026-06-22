@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
-import { genreService } from "../services/genre.service.js";
+import { GenreService } from "../services/genre.service.js";
 
-export const genreController = {
-    list: async (_req: Request, res: Response) => {
-        const genres = await genreService.getAll();
+export class GenreController {
+    constructor(private genreService: GenreService) {}
+
+    list = async (_req: Request, res: Response) => {
+        const genres = await this.genreService.getAll();
         res.status(200).json(genres);
-    },
-};
+    };
+}

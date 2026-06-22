@@ -1,18 +1,391 @@
-.video-player-wrapper {
-  width: 100%;
-  background: #000;
-  border-radius: var(--radius-md);
-  overflow: hidden;
+/* ================================================================
+   VIDEO PLAYER — Custom controls
+   ================================================================ */
+
+.vp-wrapper {
   position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  user-select: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-lg);
 }
 
-.video-player {
+.vp-wrapper:not(.vp-controls-visible) {
+  cursor: none;
+}
+
+.vp-video {
+  position: absolute;
+  inset: 0;
   width: 100%;
-  max-height: 68vh;
+  height: 100%;
   display: block;
+  object-fit: contain;
   outline: none;
 }
 
-.video-player::-webkit-media-controls-panel {
-  background: linear-gradient(transparent, rgba(0,0,0,0.75));
+/* ── Top gradient ── */
+.vp-gradient-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(rgba(0, 0, 0, 0.35), transparent);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.vp-controls-visible .vp-gradient-top {
+  opacity: 1;
+}
+
+/* ── Buffering spinner ── */
+.vp-buffering {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.vp-spinner {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(255, 255, 255, 0.15);
+  border-top-color: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: vp-spin 0.75s linear infinite;
+}
+
+@keyframes vp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Controls panel ── */
+.vp-controls {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding-top: 48px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.82));
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.vp-controls-visible .vp-controls {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Progress bar ── */
+.vp-progress {
+  padding: 0 14px 4px;
+  cursor: pointer;
+}
+
+.vp-track {
+  position: relative;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 2px;
+  transition: height 0.15s ease;
+}
+
+.vp-progress:hover .vp-track {
+  height: 5px;
+}
+
+.vp-track-buffered {
+  position: absolute;
+  inset: 0;
+  right: auto;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  transition: width 0.4s linear;
+}
+
+.vp-track-played {
+  position: absolute;
+  inset: 0;
+  right: auto;
+  background: var(--accent);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.vp-thumb {
+  width: 13px;
+  height: 13px;
+  background: #fff;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transform: scale(0);
+  transition: transform 0.15s ease;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.25), 0 2px 6px rgba(0, 0, 0, 0.5);
+  margin-right: -6px;
+}
+
+.vp-progress:hover .vp-thumb {
+  transform: scale(1);
+}
+
+/* ── Bottom control bar ── */
+.vp-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px 12px;
+  gap: 6px;
+}
+
+.vp-bar-left,
+.vp-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ── Icon buttons ── */
+.vp-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 7px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color 0.12s, background 0.12s;
+  flex-shrink: 0;
+}
+
+.vp-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.vp-btn--active {
+  color: var(--accent);
+}
+
+.vp-btn svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+/* Text buttons (speed, quality) */
+.vp-text-btn {
+  width: auto;
+  padding: 0 10px;
+  height: 32px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+/* ── Volume group ── */
+.vp-volume-group {
+  display: flex;
+  align-items: center;
+}
+
+.vp-volume-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+  transition: width 0.18s ease, opacity 0.18s ease;
+  opacity: 0;
+  overflow: visible;
+}
+
+.vp-volume-group:hover .vp-volume-slider,
+.vp-volume-group:focus-within .vp-volume-slider {
+  width: 76px;
+  opacity: 1;
+  margin-left: 2px;
+  margin-right: 4px;
+}
+
+.vp-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.4);
+}
+
+.vp-volume-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+/* ── Time display ── */
+.vp-time {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  white-space: nowrap;
+  padding: 0 6px;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.2px;
+}
+
+.vp-time-sep {
+  color: rgba(255, 255, 255, 0.35);
+  margin: 0 1px;
+}
+
+/* ── Popup menus (quality + speed share these) ── */
+.vp-quality-wrap,
+.vp-speed-wrap {
+  position: relative;
+}
+
+/* Full-screen invisible backdrop to close menus on outside click */
+.vp-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+}
+
+.vp-popup-menu {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  background: rgba(12, 12, 14, 0.97);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  padding: 6px 4px;
+  min-width: 140px;
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+}
+
+.vp-menu-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+  padding: 4px 14px 8px;
+}
+
+.vp-menu-opt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 14px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 13px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.1s, color 0.1s;
+  gap: 12px;
+}
+
+.vp-menu-opt:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.vp-menu-opt.active {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.vp-menu-opt.active::before {
+  content: "✓";
+  font-size: 11px;
+  margin-right: -4px;
+  order: -1;
+}
+
+.vp-menu-sub {
+  font-size: 10px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.2px;
+}
+
+/* ── Keyboard shortcut hint ── */
+.vp-shortcuts-hint {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  font-size: 10px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.5px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.vp-controls-visible .vp-shortcuts-hint {
+  opacity: 1;
+}
+
+/* ── Fullscreen ── */
+.vp-wrapper:fullscreen {
+  border-radius: 0;
+  aspect-ratio: auto;
+  width: 100vw;
+  height: 100vh;
+}
+
+.vp-wrapper:-webkit-full-screen {
+  border-radius: 0;
+  aspect-ratio: auto;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* ── Accessibility ── */
+.vp-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ── Mobile ── */
+@media (max-width: 640px) {
+  .vp-shortcuts-hint { display: none; }
+  .vp-time { font-size: 11px; padding: 0 4px; }
+  .vp-text-btn { padding: 0 7px; font-size: 10px; }
+  .vp-menu-sub { display: none; }
 }

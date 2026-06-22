@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { videoController } from "../controllers/video.controller.js";
+import { videoController, watchHistoryController, favoriteController } from "../container.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { validate, validateQuery } from "../middlewares/validate.middleware.js";
 import { videoUpload } from "../middlewares/upload.middleware.js";
@@ -7,10 +7,12 @@ import { uploadVideoSchema, searchVideoSchema } from "../validators/video.valida
 
 const router = Router();
 
-router.use(authMiddleware);
-
 router.get("/", videoController.list);
 router.get("/search", validateQuery(searchVideoSchema), videoController.search);
+router.get("/:id", videoController.getById);
+
+router.use(authMiddleware);
+
 router.post(
     "/upload",
     videoUpload.fields([
@@ -20,7 +22,12 @@ router.post(
     validate(uploadVideoSchema),
     videoController.upload,
 );
-router.get("/:id", videoController.getById);
 router.delete("/:id", videoController.remove);
+
+router.put("/:videoId/progress", watchHistoryController.updateProgress);
+router.get("/:videoId/progress", watchHistoryController.getProgress);
+
+router.post("/:videoId/favorite", favoriteController.toggle);
+router.get("/:videoId/favorite", favoriteController.check);
 
 export default router;
