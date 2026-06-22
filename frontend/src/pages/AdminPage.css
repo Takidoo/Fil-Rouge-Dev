@@ -40,19 +40,6 @@
   border-bottom-color: var(--accent);
 }
 
-.admin-tab--alert { color: #fb923c; }
-.admin-tab--alert:hover { color: #f97316; }
-.admin-tab--alert.active { border-bottom-color: #fb923c; }
-
-.admin-tab-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #fb923c;
-  margin-left: 4px;
-  vertical-align: middle;
-}
 
 .admin-tab-label {
   display: flex;
@@ -82,14 +69,6 @@
   border-color: rgba(232, 50, 58, 0.15);
 }
 
-.admin-stat-card--warn {
-  border-color: rgba(251, 146, 60, 0.35);
-  background: rgba(251, 146, 60, 0.05);
-}
-
-.admin-stat-card--warn .admin-stat-value {
-  color: #fb923c;
-}
 
 .admin-stat-icon {
   font-size: 22px;
@@ -309,42 +288,6 @@
   gap: 10px;
 }
 
-/* Card variants */
-.admin-card--alert {
-  border-color: rgba(251, 146, 60, 0.3);
-}
-
-.admin-card--alert .admin-card-title {
-  color: #fb923c;
-}
-
-/* Pending badge */
-.admin-pending-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  background: #fb923c;
-  color: #fff;
-  border-radius: 10px;
-  font-size: 11px;
-  font-weight: 700;
-  margin-left: 8px;
-  vertical-align: middle;
-}
-
-/* List comment extras */
-.admin-list-video-ref {
-  font-weight: 400;
-  color: var(--text-muted);
-}
-
-.admin-list-comment {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 280px;
-  display: block;
-}
 
 /* Actions group */
 .admin-actions-group {
@@ -380,92 +323,6 @@
   color: var(--text-primary);
 }
 
-/* Approve / Reject buttons */
-.btn-approve {
-  background: rgba(34, 197, 94, 0.12);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  color: #16a34a;
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition: background 0.15s;
-  white-space: nowrap;
-}
-
-.btn-approve:hover:not(:disabled) {
-  background: rgba(34, 197, 94, 0.2);
-}
-
-.btn-reject {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  color: #dc2626;
-  cursor: pointer;
-  border-radius: var(--radius-sm);
-  transition: background 0.15s;
-  white-space: nowrap;
-}
-
-.btn-reject:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.18);
-}
-
-.btn-approve:disabled,
-.btn-reject:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Comment filters */
-.admin-comment-filters {
-  display: flex;
-  gap: 6px;
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--border);
-}
-
-.admin-filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 12px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  background: transparent;
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-}
-
-.admin-filter-btn:hover {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-}
-
-.admin-filter-btn.active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-
-.admin-filter-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  background: rgba(255,255,255,0.25);
-  border-radius: 8px;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.admin-filter-btn:not(.active) .admin-filter-count {
-  background: #fb923c;
-  color: #fff;
-}
 
 /* Comment table */
 .admin-comment-cell {
@@ -497,34 +354,6 @@
   padding: 40px 20px;
   color: var(--text-muted);
   font-size: 13px;
-}
-
-/* Comment row tints */
-.admin-comment-row--pending td {
-  background: rgba(251, 146, 60, 0.03);
-}
-
-.admin-comment-row--rejected td {
-  background: rgba(239, 68, 68, 0.03);
-}
-
-/* Status badges */
-.badge-pending {
-  background: rgba(251, 146, 60, 0.15);
-  color: #c2410c;
-  border: 1px solid rgba(251, 146, 60, 0.3);
-}
-
-.badge-approved {
-  background: rgba(34, 197, 94, 0.12);
-  color: #15803d;
-  border: 1px solid rgba(34, 197, 94, 0.25);
-}
-
-.badge-rejected {
-  background: rgba(239, 68, 68, 0.1);
-  color: #b91c1c;
-  border: 1px solid rgba(239, 68, 68, 0.2);
 }
 
 /* ── Old moderation tab (kept for legacy) ─────────────── */

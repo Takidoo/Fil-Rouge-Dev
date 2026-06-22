@@ -5,7 +5,6 @@ import {
   deleteAdminUser,
   updateAdminUserRole,
   getAdminComments,
-  moderateAdminComment,
   deleteAdminComment,
   deleteAdminVideo,
 } from "../api/admin";
@@ -14,7 +13,6 @@ import { extractApiError } from "../api/errors";
 import { useAsync } from "../hooks/useAsync";
 import { formatDate } from "../utils/format";
 import { VIDEOS_BASE_URL } from "../constants";
-import type { AdminComment, CommentStatus } from "../types";
 import { useAuth } from "../contexts/AuthContext";
 import { PageHeader } from "../components/ui/PageHeader";
 import { Avatar } from "../components/ui/Avatar";
@@ -25,13 +23,6 @@ import "./AdminPage.css";
 type AdminTab = "overview" | "users" | "videos" | "comments";
 
 const TAB_IDS: AdminTab[] = ["overview", "users", "videos", "comments"];
-
-const STATUS_FILTERS: Array<{ value: CommentStatus | "ALL"; label: string }> = [
-  { value: "ALL", label: "Tous" },
-  { value: "PENDING", label: "En attente" },
-  { value: "APPROVED", label: "Approuvés" },
-  { value: "REJECTED", label: "Rejetés" },
-];
 
 export function AdminPage() {
   const { user } = useAuth();
@@ -53,7 +44,6 @@ export function AdminPage() {
   } = useAsync(getAdminComments, [], "Impossible de charger les commentaires");
 
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
-  const [commentFilter, setCommentFilter] = useState<CommentStatus | "ALL">("ALL");
 
   // User actions
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
@@ -65,7 +55,6 @@ export function AdminPage() {
   const [confirmVideoId, setConfirmVideoId] = useState<string | null>(null);
 
   // Comment actions
-  const [moderatingId, setModeratingId] = useState<string | null>(null);
   const [deletingCommentId, setDeletingCommentId] = useState<string | null>(null);
   const [confirmCommentId, setConfirmCommentId] = useState<string | null>(null);
 
@@ -75,11 +64,6 @@ export function AdminPage() {
   const allVideos = videos ?? [];
   const allComments = comments ?? [];
   const error = usersError || actionError;
-
-  const pendingComments = allComments.filter((c) => c.status === "PENDING");
-  const filteredComments = commentFilter === "ALL"
-    ? allComments
-    : allComments.filter((c) => c.status === commentFilter);
 
   /* ── User actions ─────────────────────────────────────────── */
 
@@ -129,19 +113,6 @@ export function AdminPage() {
 
   /* ── Comment actions ──────────────────────────────────────── */
 
-  const handleModerate = async (id: string, status: "APPROVED" | "REJECTED") => {
-    setModeratingId(id);
-    setActionError("");
-    try {
-      const updated = await moderateAdminComment(id, status);
-      setComments((prev) => prev ? prev.map((c) => c.id === id ? { ...c, status: updated.status } : c) : prev);
-    } catch (err) {
-      setActionError(extractApiError(err, "Impossible de modérer ce commentaire"));
-    } finally {
-      setModeratingId(null);
-    }
-  };
-
   const handleDeleteComment = async (id: string) => {
     setDeletingCommentId(id);
     setActionError("");
@@ -169,10 +140,7 @@ export function AdminPage() {
       case "overview": return "Vue d'ensemble";
       case "users": return `Utilisateurs (${totalUsers})`;
       case "videos": return `Vidéos (${totalVideos})`;
-      case "comments":
-        return pendingComments.length > 0
-          ? `Commentaires · ${pendingComments.length} en attente`
-          : `Commentaires (${allComments.length})`;
+      case "comments": return `Commentaires (${allComments.length})`;
       default: return "";
     }
   };
@@ -200,13 +168,10 @@ export function AdminPage() {
           {TAB_IDS.map((tab) => (
             <button
               key={tab}
-              className={`admin-tab ${activeTab === tab ? "active" : ""} ${tab === "comments" && pendingComments.length > 0 ? "admin-tab--alert" : ""}`}
+              className={`admin-tab ${activeTab === tab ? "active" : ""}`}
               onClick={() => setActiveTab(tab)}
             >
               {tabLabel(tab)}
-              {tab === "comments" && pendingComments.length > 0 && (
-                <span className="admin-tab-dot" />
-              )}
             </button>
           ))}
         </div>
@@ -230,10 +195,9 @@ export function AdminPage() {
               />
               <StatCard
                 icon="💬"
-                label="Commentaires en attente"
-                value={loadingComments ? "…" : String(pendingComments.length)}
-                sub="à modérer"
-                warn={pendingComments.length > 0}
+                label="Commentaires"
+                value={loadingComments ? "…" : String(allComments.length)}
+                sub="publiés sur la plateforme"
               />
               <StatCard
                 icon="📊"
@@ -307,36 +271,6 @@ export function AdminPage() {
                       ))}
                 </div>
               </div>
-
-              {pendingComments.length > 0 && (
-                <div className="admin-card admin-card--alert">
-                  <div className="admin-card-header">
-                    <h3 className="admin-card-title">
-                      Commentaires en attente
-                      <span className="admin-pending-badge">{pendingComments.length}</span>
-                    </h3>
-                    <button
-                      className="btn btn-ghost admin-see-all"
-                      onClick={() => { setCommentFilter("PENDING"); setActiveTab("comments"); }}
-                    >
-                      Modérer →
-                    </button>
-                  </div>
-                  <div className="admin-list">
-                    {pendingComments.slice(0, 3).map((c) => (
-                      <div key={c.id} className="admin-list-row">
-                        <Avatar name={c.user.name} size="md" />
-                        <div className="admin-list-info">
-                          <span className="admin-list-primary">
-                            {c.user.name} · <span className="admin-list-video-ref">{c.video.title}</span>
-                          </span>
-                          <span className="admin-list-secondary admin-list-comment">{c.content}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         )}
@@ -516,28 +450,8 @@ export function AdminPage() {
           <div className="admin-comments animate-in">
             <div className="admin-card">
               <div className="admin-card-header">
-                <h3 className="admin-card-title">
-                  Modération des commentaires
-                  {pendingComments.length > 0 && (
-                    <span className="admin-pending-badge">{pendingComments.length} en attente</span>
-                  )}
-                </h3>
-                <span className="admin-count-badge">{filteredComments.length}</span>
-              </div>
-
-              <div className="admin-comment-filters">
-                {STATUS_FILTERS.map(({ value, label }) => (
-                  <button
-                    key={value}
-                    className={`admin-filter-btn ${commentFilter === value ? "active" : ""}`}
-                    onClick={() => setCommentFilter(value)}
-                  >
-                    {label}
-                    {value === "PENDING" && pendingComments.length > 0 && (
-                      <span className="admin-filter-count">{pendingComments.length}</span>
-                    )}
-                  </button>
-                ))}
+                <h3 className="admin-card-title">Tous les commentaires</h3>
+                <span className="admin-count-badge">{allComments.length}</span>
               </div>
 
               <div className="admin-table-wrapper">
@@ -548,7 +462,6 @@ export function AdminPage() {
                       <th>Commentaire</th>
                       <th>Vidéo</th>
                       <th>Date</th>
-                      <th>Statut</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -556,21 +469,21 @@ export function AdminPage() {
                     {loadingComments
                       ? Array.from({ length: 5 }).map((_, i) => (
                           <tr key={i}>
-                            {Array.from({ length: 6 }).map((__, j) => (
+                            {Array.from({ length: 5 }).map((__, j) => (
                               <td key={j}><div className="skeleton" style={{ height: 16, borderRadius: 4 }} /></td>
                             ))}
                           </tr>
                         ))
-                      : filteredComments.length === 0
+                      : allComments.length === 0
                       ? (
                           <tr>
-                            <td colSpan={6} className="admin-table-empty">
-                              Aucun commentaire{commentFilter !== "ALL" ? ` avec le statut "${commentFilter}"` : ""}
+                            <td colSpan={5} className="admin-table-empty">
+                              Aucun commentaire pour le moment
                             </td>
                           </tr>
                         )
-                      : filteredComments.map((c) => (
-                          <tr key={c.id} className={`admin-comment-row admin-comment-row--${c.status.toLowerCase()}`}>
+                      : allComments.map((c) => (
+                          <tr key={c.id}>
                             <td>
                               <div className="admin-table-user">
                                 <Avatar name={c.user.name} size="sm" />
@@ -579,7 +492,7 @@ export function AdminPage() {
                             </td>
                             <td className="admin-comment-cell">
                               <span className="admin-comment-text" title={c.content}>
-                                {c.content.length > 80 ? c.content.slice(0, 80) + "…" : c.content}
+                                {c.content.length > 100 ? c.content.slice(0, 100) + "…" : c.content}
                               </span>
                             </td>
                             <td>
@@ -592,19 +505,22 @@ export function AdminPage() {
                             </td>
                             <td className="admin-table-date">{formatDate(c.createdAt)}</td>
                             <td>
-                              <StatusBadge status={c.status} />
-                            </td>
-                            <td>
-                              <CommentActions
-                                comment={c}
-                                busy={moderatingId === c.id || deletingCommentId === c.id}
-                                confirmDelete={confirmCommentId === c.id}
-                                onApprove={() => handleModerate(c.id, "APPROVED")}
-                                onReject={() => handleModerate(c.id, "REJECTED")}
-                                onDelete={() => handleDeleteComment(c.id)}
-                                onConfirmDelete={() => setConfirmCommentId(c.id)}
-                                onCancelDelete={() => setConfirmCommentId(null)}
-                              />
+                              {confirmCommentId === c.id ? (
+                                <ConfirmInline
+                                  small
+                                  busy={deletingCommentId === c.id}
+                                  onConfirm={() => handleDeleteComment(c.id)}
+                                  onCancel={() => setConfirmCommentId(null)}
+                                />
+                              ) : (
+                                <button
+                                  className="btn btn-sm btn-danger"
+                                  disabled={deletingCommentId === c.id}
+                                  onClick={() => setConfirmCommentId(c.id)}
+                                >
+                                  Supprimer
+                                </button>
+                              )}
                             </td>
                           </tr>
                         ))}
@@ -627,12 +543,11 @@ interface StatCardProps {
   value: string;
   sub: string;
   accent?: boolean;
-  warn?: boolean;
 }
 
-function StatCard({ icon, label, value, sub, accent, warn }: StatCardProps) {
+function StatCard({ icon, label, value, sub, accent }: StatCardProps) {
   return (
-    <div className={`admin-stat-card ${accent ? "admin-stat-card--accent" : ""} ${warn ? "admin-stat-card--warn" : ""}`}>
+    <div className={`admin-stat-card ${accent ? "admin-stat-card--accent" : ""}`}>
       <div className="admin-stat-icon">{icon}</div>
       <div className="admin-stat-body">
         <span className="admin-stat-value">{value}</span>
@@ -643,78 +558,3 @@ function StatCard({ icon, label, value, sub, accent, warn }: StatCardProps) {
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; cls: string }> = {
-    PENDING:  { label: "En attente", cls: "badge-pending" },
-    APPROVED: { label: "Approuvé",   cls: "badge-approved" },
-    REJECTED: { label: "Rejeté",     cls: "badge-rejected" },
-  };
-  const { label, cls } = map[status] ?? { label: status, cls: "" };
-  return <span className={`badge ${cls}`}>{label}</span>;
-}
-
-interface CommentActionsProps {
-  comment: AdminComment;
-  busy: boolean;
-  confirmDelete: boolean;
-  onApprove: () => void;
-  onReject: () => void;
-  onDelete: () => void;
-  onConfirmDelete: () => void;
-  onCancelDelete: () => void;
-}
-
-function CommentActions({
-  comment,
-  busy,
-  confirmDelete,
-  onApprove,
-  onReject,
-  onDelete,
-  onConfirmDelete,
-  onCancelDelete,
-}: CommentActionsProps) {
-  if (confirmDelete) {
-    return (
-      <ConfirmInline
-        small
-        busy={busy}
-        onConfirm={onDelete}
-        onCancel={onCancelDelete}
-      />
-    );
-  }
-
-  return (
-    <div className="admin-actions-group">
-      {comment.status !== "APPROVED" && (
-        <button
-          className="btn btn-xs btn-approve"
-          disabled={busy}
-          onClick={onApprove}
-          title="Approuver"
-        >
-          ✓ Approuver
-        </button>
-      )}
-      {comment.status !== "REJECTED" && (
-        <button
-          className="btn btn-xs btn-reject"
-          disabled={busy}
-          onClick={onReject}
-          title="Rejeter"
-        >
-          ✗ Rejeter
-        </button>
-      )}
-      <button
-        className="btn btn-xs btn-danger"
-        disabled={busy}
-        onClick={onConfirmDelete}
-        title="Supprimer définitivement"
-      >
-        Supprimer
-      </button>
-    </div>
-  );
-}

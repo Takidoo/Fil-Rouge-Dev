@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import type { AdminComment, AdminUser, CommentModerationStatus, Role } from "../types";
+import type { AdminComment, AdminUser, Role } from "../types";
 
 export async function getAdminUsers(): Promise<AdminUser[]> {
   const { data } = await apiClient.get<AdminUser[]>("/admin/users");
@@ -17,11 +17,6 @@ export async function updateAdminUserRole(id: string, role: Role): Promise<Admin
 
 export async function getAdminComments(): Promise<AdminComment[]> {
   const { data } = await apiClient.get<AdminComment[]>("/admin/comments");
-  return data;
-}
-
-export async function moderateAdminComment(id: string, status: CommentModerationStatus): Promise<AdminComment> {
-  const { data } = await apiClient.patch<AdminComment>(`/admin/comments/${id}`, { status });
   return data;
 }
 
