@@ -2,7 +2,7 @@ import axios from "axios";
 import { authStorage } from "../utils/storage";
 
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "",
+  baseURL: (import.meta.env.VITE_API_URL ?? "") + "/api",
 });
 
 apiClient.interceptors.request.use((config) => {

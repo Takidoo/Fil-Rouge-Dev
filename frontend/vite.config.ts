@@ -1,9 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-const BACKEND_URL = 'https://fil-rouge-dev.onrender.com'
+const BACKEND_URL = 'http://localhost:3000'
 
-const PROXIED_PATHS = ['/auth', '/user', '/video', '/genre', '/comment', '/admin', '/videos']
+const PROXIED_PATHS = ['/api', '/videos']
 
 export default defineConfig(({ mode }) => ({
   plugins: [react()],

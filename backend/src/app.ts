@@ -41,7 +41,7 @@ export function createApp(): Express {
 
     app.use("/videos", express.static(VIDEOS_ROOT, { setHeaders: setStreamingHeaders }));
 
-    app.use(apiRouter);
+    app.use("/api", apiRouter);
 
     app.use(notFoundMiddleware);
     app.use(errorMiddleware);
