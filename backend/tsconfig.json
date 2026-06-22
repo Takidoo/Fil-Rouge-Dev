@@ -3,7 +3,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "target": "ES2023",
-    "rootDir": ".",
+    "rootDir": "src",
     "outDir": "dist",
     "strict": true,
     "noUnusedLocals": true,
@@ -12,6 +12,6 @@
     "skipLibCheck": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*", "generated/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["videos", "dist", "node_modules"]
 }

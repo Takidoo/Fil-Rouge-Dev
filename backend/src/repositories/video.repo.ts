@@ -1,4 +1,4 @@
-import type { PrismaClient } from "../../generated/prisma/client.js";
+import type { PrismaClient } from "../generated/prisma/client.js";
 import { normalizeForSearch } from "../utils/search.js";
 
 const includeGenres = { genres: { orderBy: { name: "asc" as const } } };

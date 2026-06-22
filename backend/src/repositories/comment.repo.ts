@@ -1,4 +1,4 @@
-import type { PrismaClient } from "../../generated/prisma/client.js";
+import type { PrismaClient } from "../generated/prisma/client.js";
 
 const includeUser = {
     user: { select: { id: true, name: true } },
