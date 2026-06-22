@@ -1,251 +1,275 @@
-# STREAMIX - Plateforme de Diffusion Vidéo
+# STREAMIX — Plateforme de Streaming Vidéo
 
-Une plateforme moderne de diffusion vidéo construite avec Express, React et Prisma. Diffusez des vidéos en HLS, gérez votre bibliothèque personnelle et interagissez avec la communauté grâce aux commentaires et à la découverte par genre.
+STREAMIX est une plateforme de streaming vidéo full-stack inspirée de YouTube. Les utilisateurs peuvent uploader des vidéos, les regarder en qualité adaptative (HLS), commenter, ajouter en favoris et suivre leur historique de visionnage. Un panneau d'administration permet de modérer les contenus.
 
-## Stack Technologique
-
-### Backend
-- **Framework**: Express 5
-- **Base de données**: PostgreSQL (via Prisma 7 avec @prisma/adapter-pg)
-- **Langage**: TypeScript 6
-- **Validation**: Zod 4
-- **Authentification**: JWT + bcrypt
-- **Traitement vidéo**: fluent-ffmpeg + ffmpeg-static (conversion HLS)
-- **Sécurité**: Helmet (CSP), express-rate-limit
-
-### Frontend
-- **Framework**: React 19
-- **Outil de build**: Vite 8
-- **Langage**: TypeScript 6
-- **Routage**: React Router 7
-- **Client HTTP**: Axios
-- **Lecteur vidéo**: HLS.js
+---
 
 ## Fonctionnalités
 
-- 🎬 **Diffusion vidéo**: Livraison vidéo basée sur HLS avec conversion à la demande
-- 👤 **Comptes utilisateur**: Inscription, connexion, gestion de profil
-- 🎯 **Organisation par genre**: Parcourir et filtrer les vidéos par genre
-- 💬 **Commentaires**: Commenter directement les vidéos (publication instantanée)
-- 🔍 **Recherche**: Recherche textuelle insensible aux accents sur les titres et descriptions
-- 🎬 **Téléversement vidéo**: Les utilisateurs peuvent télécharger, convertir et gérer leurs vidéos
-- 👮 **Panneau administrateur**: Gestion des utilisateurs et des capacités de modération
-- 📱 **Interface réactive**: Interface adaptée aux mobiles avec proxy du serveur de développement Vite
+- **Streaming HLS adaptatif** — les vidéos sont converties automatiquement en 3 qualités (1080p / 720p / 480p) via FFmpeg
+- **Lecteur vidéo custom** — contrôles complets, sélection de qualité manuelle, raccourcis clavier, picture-in-picture
+- **Authentification JWT** — inscription, connexion, token d'accès signé
+- **Rôles** — utilisateur standard et administrateur
+- **Upload vidéo** — conversion HLS automatique à l'upload
+- **Commentaires** — publication instantanée
+- **Favoris & historique** — suivi de la progression de visionnage
+- **Recherche** — recherche textuelle insensible aux accents
+- **Panel admin** — modération des commentaires, gestion des utilisateurs et genres
 
-## Structure du projet
+---
 
-```
-.
-├── backend/
-│   ├── src/
-│   │   ├── app.ts                 # Configuration de l'app Express
-│   │   ├── server.ts              # Point d'entrée du serveur
-│   │   ├── config/                # Configuration (env, chemins, constantes)
-│   │   ├── controllers/           # Handlers des routes
-│   │   ├── services/              # Logique métier
-│   │   ├── repositories/          # Couche d'accès aux données
-│   │   ├── middlewares/           # Middlewares Express
-│   │   ├── validators/            # Schémas Zod
-│   │   ├── types/                 # Types TypeScript
-│   │   ├── utils/                 # Helpers (auth, logging, HLS, etc.)
-│   │   └── db/                    # Client Prisma
-│   ├── prisma/
-│   │   ├── schema.prisma          # Schéma de base de données
-│   │   ├── seed.ts                # Peuplement initial
-│   │   └── migrations/            # Historique des migrations
-│   ├── videos/                    # Stockage média (HLS, originaux, miniatures)
-│   └── dist/                      # Sortie compilée
-│
-├── frontend/
-│   ├── src/
-│   │   ├── pages/                 # Composants de pages
-│   │   ├── components/            # Composants réutilisables
-│   │   ├── api/                   # Client API
-│   │   ├── hooks/                 # Hooks React personnalisés
-│   │   ├── contexts/              # Contextes React
-│   │   ├── types/                 # Types TypeScript
-│   │   ├── utils/                 # Helpers
-│   │   ├── constants/             # Constantes de l'app
-│   │   └── App.tsx                # Composant racine
-│   ├── public/                    # Ressources statiques
-│   └── dist/                      # Sortie de build
-│
-└── ARCHITECTURE.md                # Guide d'architecture détaillé
+## Stack technique
+
+| Côté | Technologie |
+|---|---|
+| Frontend | React 19, TypeScript, Vite 8, React Router 7, Axios, HLS.js |
+| Backend | Node.js 20, Express 5, TypeScript |
+| Base de données | PostgreSQL + Prisma 7 |
+| Vidéo | FFmpeg (ffmpeg-static), HLS multi-renditions |
+| Auth | JWT (jsonwebtoken), bcrypt |
+| Sécurité | Helmet, express-rate-limit, CORS |
+| Build backend | esbuild |
+
+---
+
+## Prérequis
+
+- **Node.js** 20+
+- **PostgreSQL** 14+
+- **FFmpeg** — fourni automatiquement via `ffmpeg-static` (pas d'installation manuelle)
+
+---
+
+## Installation locale
+
+### 1. Cloner le projet
+
+```bash
+git clone https://github.com/Takidoo/Fil-Rouge-Dev.git
+cd Fil-Rouge-Dev
 ```
 
-## Installation
-
-### Prérequis
-- Node.js 18+
-- PostgreSQL 14+
-- FFmpeg (pour la conversion vidéo HLS)
-
-#### Backend
+### 2. Backend
 
 ```bash
 cd backend
 npm install
 ```
 
-Créer `.env`:
+Créer le fichier `.env` :
+
 ```env
-DATABASE_URL="postgresql://user:password@localhost:5432/streamix"
-JWT_SECRET="votre-cle-secrete-ici"
+DATABASE_URL="postgresql://postgres:motdepasse@localhost:5432/streamix"
+JWT_SECRET="une-cle-secrete-longue-et-aleatoire"
 NODE_ENV="development"
 PORT=3000
+ALLOWED_ORIGIN="http://localhost:5173"
 ```
 
-Initialiser la base de données:
+Initialiser la base de données et charger les genres :
+
 ```bash
 npx prisma migrate dev
-npx prisma db seed
+npm run db:seed
 ```
 
-Démarrer le serveur de développement:
+Démarrer le serveur de développement :
+
 ```bash
 npm run dev
+# API disponible sur http://localhost:3000
 ```
 
-Compiler:
-```bash
-npm run build
-```
-
-#### Frontend
+### 3. Frontend
 
 ```bash
 cd frontend
 npm install
-```
-
-Démarrer le serveur de développement:
-```bash
 npm run dev
+# Application disponible sur http://localhost:5173
 ```
 
-Compiler:
-```bash
-npm run build
+> Le proxy Vite redirige automatiquement les appels API vers `http://localhost:3000` — aucune configuration supplémentaire nécessaire.
+
+---
+
+## Structure du projet
+
+```
+Fil-Rouge-Dev/
+├── backend/
+│   ├── src/
+│   │   ├── server.ts          # Point d'entrée
+│   │   ├── app.ts             # Configuration Express
+│   │   ├── config/            # Variables d'env, chemins
+│   │   ├── controllers/       # Gestion des requêtes HTTP
+│   │   ├── services/          # Logique métier
+│   │   ├── repositories/      # Accès base de données (Prisma)
+│   │   ├── middlewares/       # Auth, erreurs, validation
+│   │   ├── validators/        # Schémas Zod
+│   │   ├── utils/             # HLS, logger, JWT, bcrypt
+│   │   └── db/                # Client Prisma
+│   ├── prisma/
+│   │   ├── schema.prisma      # Modèle de données
+│   │   ├── seed.ts            # Données initiales (genres)
+│   │   └── migrations/        # Historique des migrations
+│   └── videos/                # Stockage local (originaux + HLS)
+│
+└── frontend/
+    └── src/
+        ├── pages/             # Vues (Home, VideoPage, Login…)
+        ├── components/        # Composants réutilisables
+        ├── api/               # Client Axios + interceptors
+        ├── contexts/          # AuthContext
+        ├── hooks/             # Hooks custom
+        ├── types/             # Types TypeScript
+        └── utils/             # Helpers
 ```
 
-## Aperçu de l'API
+---
+
+## Architecture back-end
+
+Le backend suit une **architecture en couches** :
+
+```
+Requête HTTP
+    ↓
+  Route         →  définit l'endpoint et appelle le controller
+    ↓
+  Controller    →  valide les données d'entrée (Zod)
+    ↓
+  Service       →  logique métier
+    ↓
+  Repository    →  requêtes Prisma / PostgreSQL
+```
+
+Chaque couche est indépendante et ne connaît que la couche suivante.
+
+---
+
+## API — Principaux endpoints
 
 ### Authentification
-- `POST /auth/register` - Créer un compte
-- `POST /auth/login` - Obtenir un token JWT
-- `POST /auth/logout` - Terminer la session
+| Méthode | Route | Description |
+|---|---|---|
+| POST | `/auth/register` | Créer un compte |
+| POST | `/auth/login` | Connexion — retourne un JWT |
+| POST | `/auth/logout` | Déconnexion |
 
 ### Vidéos
-- `GET /video` - Lister toutes les vidéos
-- `POST /video` - Téléverser une nouvelle vidéo (authentifiée)
-- `GET /video/:id` - Obtenir les détails d'une vidéo
-- `PUT /video/:id` - Mettre à jour une vidéo (propriétaire uniquement)
-- `DELETE /video/:id` - Supprimer une vidéo (propriétaire ou admin)
-- `GET /video/search?q=...` - Rechercher des vidéos
+| Méthode | Route | Auth | Description |
+|---|---|---|---|
+| GET | `/video` | — | Liste toutes les vidéos |
+| GET | `/video/search?q=` | — | Recherche |
+| GET | `/video/:id` | — | Détail d'une vidéo |
+| POST | `/video` | ✓ | Upload + conversion HLS |
+| PUT | `/video/:id` | ✓ | Modifier (propriétaire) |
+| DELETE | `/video/:id` | ✓ | Supprimer (propriétaire ou admin) |
 
 ### Commentaires
-- `GET /comment/video/:videoId` - Obtenir les commentaires d'une vidéo
-- `POST /comment/video/:videoId` - Créer un commentaire (authentifié)
-- `DELETE /comment/:id` - Supprimer un commentaire (auteur ou admin)
+| Méthode | Route | Auth | Description |
+|---|---|---|---|
+| GET | `/comment/video/:id` | — | Commentaires d'une vidéo |
+| POST | `/comment/video/:id` | ✓ | Poster un commentaire |
+| DELETE | `/comment/:id` | ✓ | Supprimer |
 
-### Genres
-- `GET /genre` - Lister tous les genres
-- `POST /genre` - Créer un genre (admin uniquement)
-
-### Utilisateurs
-- `GET /user/profile` - Obtenir l'utilisateur courant
-- `PUT /user/profile` - Mettre à jour le profil (authentifié)
-- `GET /user` - Lister les utilisateurs (admin uniquement)
-- `DELETE /user/:id` - Supprimer un utilisateur (admin uniquement)
+### Utilisateur
+| Méthode | Route | Auth | Description |
+|---|---|---|---|
+| GET | `/user/profile` | ✓ | Profil courant |
+| PUT | `/user/profile` | ✓ | Modifier le profil |
+| GET | `/user/favorites` | ✓ | Mes favoris |
+| GET | `/user/history` | ✓ | Mon historique |
 
 ### Admin
-- `GET /admin/users` - Statistiques du tableau de bord
+| Méthode | Route | Admin | Description |
+|---|---|---|---|
+| GET | `/admin/users` | ✓ | Liste des utilisateurs |
+| DELETE | `/admin/users/:id` | ✓ | Supprimer un utilisateur |
+| PATCH | `/admin/comment/:id` | ✓ | Modérer un commentaire |
+| GET | `/admin/videos` | ✓ | Toutes les vidéos |
 
-## Points clés de l'architecture
+---
 
-### Architecture en couches
-- **Controllers**: Gestion des requêtes/réponses HTTP
-- **Services**: Logique métier et validation
-- **Repositories**: Abstraction de la base de données
-- **Middleware**: Préoccupations transversales (auth, validation, erreurs)
+## Conversion vidéo HLS
 
-### Sécurité
-- **Authentification**: JWT avec expiration 8 heures
-- **Mots de passe**: Hachage bcrypt (12 salt rounds)
-- **Autorisation**: Contrôle d'accès basé sur les rôles (ADMIN/USER)
-- **CORS**: Configuré pour l'origine du frontend
-- **Rate Limiting**: Fenêtres 15 minutes, 20 requêtes par IP
-- **CSP**: Helmet avec headers de sécurité média
+À chaque upload, FFmpeg génère automatiquement 3 renditions :
 
-### Traitement vidéo
-- **Format**: HLS (HTTP Live Streaming)
-- **Codec**: H.264 (libx264)
-- **Résolution**: 1280x720 (mise à l'échelle adaptative)
-- **Segments**: Fichiers TS de 6 secondes
-- **Conversion**: À la demande lors du téléversement (async recommandé en production)
+```
+vidéo originale (MP4)
+        ↓
+   FFmpeg (ffmpeg-static)
+        ↓
+┌───────────────────────────┐
+│  1080p — 5000 kbps        │
+│   720p — 2800 kbps        │
+│   480p — 1400 kbps        │
+└───────────────────────────┘
+        ↓
+  index.m3u8  (master playlist)
+        ↓
+  HLS.js (frontend) — sélection automatique ou manuelle
+```
 
-### Recherche
-- Correspondance textuelle insensible aux accents
-- Stockage normalisé (décomposition NFD + suppression d'accents)
-- Support du filtrage par genre
+Les segments vidéo (`.ts`) de 6 secondes sont servis statiquement depuis `/videos`.
+
+---
 
 ## Variables d'environnement
 
-### Backend
-- `DATABASE_URL` - Chaîne de connexion PostgreSQL (obligatoire)
-- `JWT_SECRET` - Clé secrète pour la signature JWT (obligatoire)
-- `NODE_ENV` - "development" | "production"
-- `PORT` - Port du serveur (défaut: 3000)
+### Backend (`backend/.env`)
 
-### Frontend
-- Le serveur de développement Vite proxie l'API vers le backend (voir `vite.config.ts`)
+| Variable | Obligatoire | Défaut | Description |
+|---|---|---|---|
+| `DATABASE_URL` | ✓ | — | Connexion PostgreSQL |
+| `JWT_SECRET` | ✓ | — | Clé de signature des tokens |
+| `NODE_ENV` | — | `development` | Environnement |
+| `PORT` | — | `3000` | Port du serveur |
+| `ALLOWED_ORIGIN` | — | `http://localhost:5173` | Origine CORS autorisée |
 
-## Développement
+---
 
-### Exécuter les tests
-```bash
-# Backend
-npm run test
+## Déploiement
 
-# Frontend
-npm run test
+Le projet est déployé en deux services séparés :
+
+| Service | Plateforme | URL |
+|---|---|---|
+| Backend (API + vidéos) | Render.com | `https://fil-rouge-dev.onrender.com` |
+| Frontend (SPA) | Render.com | `https://fil-rouge-dev-1.onrender.com` |
+
+### Variables à configurer sur Render (backend)
+
+```
+NODE_ENV=production
+DATABASE_URL=<connexion PostgreSQL Render>
+JWT_SECRET=<clé secrète>
+ALLOWED_ORIGIN=https://fil-rouge-dev-1.onrender.com
 ```
 
-### Compiler
-```bash
-# Backend
-npm run build
+### Commandes de build/start (Render)
 
-# Frontend
-npm run build
+```bash
+# Build
+npm install && npm run build
+
+# Start
+npx prisma migrate deploy && node ./dist/server.js
 ```
 
-### Vérification des types
-```bash
-# Les deux projets utilisent TypeScript pour la sécurité au temps de compilation
-tsc --noEmit
-```
+---
 
-## Limitations connues et améliorations futures
+## Sécurité
 
-1. **Conversion HLS synchrone**: Bloque la réponse de téléversement; recommande une file d'attente async (BullMQ)
-2. **Pagination**: Considérer l'ajout de limites aux requêtes `findAll()`
-3. **Validation média**: Ajouter la validation du magic byte pour les fichiers téléversés
-4. **Rate Limiting**: Non appliqué aux endpoints coûteux comme `/video/upload`
-5. **Tests**: Aucune suite de tests visible dans le repo actuel
+- Mots de passe hachés avec **bcrypt** (12 salt rounds)
+- Tokens JWT expiration **8 heures**
+- **Rate limiting** — 20 requêtes / 15 min par IP
+- Headers sécurisés via **Helmet** (CSP, CORS, HSTS…)
+- Validation de toutes les entrées avec **Zod**
 
-## Contribution
+---
 
-- Suivre le modèle d'architecture en couches existant
-- Utiliser Zod pour toute la validation des entrées
-- Implémenter une gestion d'erreurs appropriée via `AppError`
-- Ajouter des types TypeScript pour les nouvelles fonctionnalités
-- Garder la logique métier dans les services, pas dans les controllers
+## Projet scolaire
 
-## Licence
-
-Projet interne pour Ynov (Fil Rouge Dev).
-
-## Support
-
-Pour les problèmes ou questions, consultez `ARCHITECTURE.md` pour les décisions de conception détaillées.
+Projet Fil Rouge — Ynov B2 — 2025/2026
