@@ -47,7 +47,7 @@ export const favoriteService = new FavoriteService(favoriteRepository);
 export const watchHistoryService = new WatchHistoryService(watchHistoryRepository);
 
 // Instantiate Controllers
-export const adminController = new AdminController(userService);
+export const adminController = new AdminController(userService, commentRepository, videoRepository, userRepository);
 export const authController = new AuthController(authService);
 export const commentController = new CommentController(commentService);
 export const genreController = new GenreController(genreService);

@@ -4,6 +4,13 @@ const includeUser = {
     user: { select: { id: true, name: true } },
 } as const;
 
+const includeUserAndVideo = {
+    user: { select: { id: true, name: true } },
+    video: { select: { id: true, title: true } },
+} as const;
+
+type CommentStatus = "PENDING" | "APPROVED" | "REJECTED";
+
 export class CommentRepository {
     constructor(private prisma: PrismaClient) {}
 
@@ -24,6 +31,26 @@ export class CommentRepository {
             orderBy: { createdAt: "asc" },
             include: includeUser,
         });
+    }
+
+    findAll(status: CommentStatus | null) {
+        return this.prisma.comment.findMany({
+            where: status ? { status } : undefined,
+            orderBy: { createdAt: "desc" },
+            include: includeUserAndVideo,
+        });
+    }
+
+    updateStatus(id: string, status: "APPROVED" | "REJECTED") {
+        return this.prisma.comment.update({
+            where: { id },
+            data: { status },
+            include: includeUserAndVideo,
+        });
+    }
+
+    countPending() {
+        return this.prisma.comment.count({ where: { status: "PENDING" } });
     }
 
     deleteById(id: string) {

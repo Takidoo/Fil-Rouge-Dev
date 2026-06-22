@@ -55,6 +55,10 @@ export interface PendingComment extends Comment {
   video: { id: string; title: string };
 }
 
+export interface AdminComment extends Comment {
+  video: { id: string; title: string };
+}
+
 export interface AuthResponse {
   token: string;
 }

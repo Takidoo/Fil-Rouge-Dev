@@ -50,6 +50,14 @@ export class UserRepository {
         return this.prisma.user.update({ where: { email }, data, select: publicUserSelect });
     }
 
+    updateRole(id: string, role: "ADMIN" | "USER") {
+        return this.prisma.user.update({
+            where: { id },
+            data: { role },
+            select: { ...publicUserSelect, _count: { select: { videos: true } } },
+        });
+    }
+
     deleteById(id: string) {
         return this.prisma.user.delete({ where: { id }, select: { id: true } });
     }
