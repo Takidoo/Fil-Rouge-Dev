@@ -163,6 +163,11 @@
   background: rgba(248, 113, 113, 0.08);
 }
 
+/* Always show delete on touch devices (no hover) */
+@media (pointer: coarse) {
+  .comment-delete-btn { opacity: 0.5; }
+}
+
 .comment-content {
   font-size: 13px;
   color: var(--text-secondary);

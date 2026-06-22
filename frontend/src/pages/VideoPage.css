@@ -120,3 +120,12 @@
   .video-page-title { font-size: 22px; }
   .video-page-actions { width: 100%; }
 }
+
+@media (max-width: 480px) {
+  .video-page { padding: 12px 0 40px; }
+  .video-page-title { font-size: 18px; }
+  .video-page-back { margin-bottom: 12px; font-size: 12px; }
+  .video-page .vp-wrapper { margin-bottom: 14px; }
+  .video-page-info { gap: 14px; }
+  .video-page-desc { font-size: 13px; }
+}

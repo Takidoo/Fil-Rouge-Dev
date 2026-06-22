@@ -99,9 +99,101 @@
   padding: 5px 10px;
 }
 
+/* ── Hamburger button (mobile only) ────────────────────── */
+.navbar-menu-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: auto;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+
+.navbar-menu-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-card);
+}
+
+/* ── Mobile menu panel ──────────────────────────────────── */
+.navbar-mobile-menu {
+  display: none;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+  padding: 6px 0 14px;
+  background: rgba(10, 10, 11, 0.98);
+}
+
+.navbar-mobile-link {
+  display: block;
+  padding: 13px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  border-left: 2px solid transparent;
+  transition: color 0.12s, background 0.12s, border-color 0.12s;
+}
+
+.navbar-mobile-link:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.03);
+}
+
+.navbar-mobile-link.active {
+  color: var(--text-primary);
+  border-left-color: var(--accent);
+  background: rgba(255,255,255,0.03);
+}
+
+.navbar-mobile-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0;
+}
+
+.navbar-mobile-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+}
+
+.navbar-mobile-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.navbar-mobile-logout {
+  margin: 4px 16px 0;
+  font-size: 13px;
+  padding: 8px 14px;
+  width: calc(100% - 32px);
+  text-align: left;
+  justify-content: flex-start;
+  border: 1px solid var(--border);
+}
+
+/* ── Responsive ─────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .navbar-email { display: none; }
-  .navbar-links { gap: 0; }
-  .navbar-link { padding: 5px 9px; font-size: 12px; }
-  .navbar-logo { margin-right: 16px; }
+  .navbar-links { display: none; }
+  .navbar-user { display: none; }
+  .navbar-menu-btn { display: flex; }
+  .navbar-logo { margin-right: 0; }
+
+  .navbar--menu-open .navbar-mobile-menu {
+    display: flex;
+  }
 }

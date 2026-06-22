@@ -159,7 +159,16 @@
 .home-row-arrow--right { right: -18px; }
 
 @media (max-width: 640px) {
-  .home-hero { height: 360px; }
-  .home-row-card { flex: 0 0 200px; }
+  .home-hero { height: 340px; }
+  .home-hero-content { padding-bottom: 28px; }
+  .home-hero-actions { gap: 8px; }
+  .home-row { margin-bottom: 32px; }
+  .home-row-card { flex: 0 0 180px; }
   .home-row-arrow { display: none; }
+}
+
+@media (max-width: 400px) {
+  .home-hero { height: 280px; }
+  .home-row-card { flex: 0 0 160px; }
+  .home-greeting { margin-bottom: 20px; }
 }
